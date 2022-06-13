@@ -1,13 +1,14 @@
 '''
 Description: this program implement a environment for the car game.
 Date: 2022-06-10 15:50:52
-LastEditTime: 2022-06-11 16:47:39
+LastEditTime: 2022-06-13 17:14:16
 '''
 
 # import necessary libraries
 from asyncio import to_thread
 from time import sleep
 from tkinter.messagebox import NO
+from matplotlib import projections
 import pygame
 import sys
 import numpy as np
@@ -38,19 +39,21 @@ class Environment:
         """本函数用以启动环境，在进行实例化后调用一次本函数即可，此后可通过reset函数来进行环境重置
 
         Args:
-            return_mode (str, optional): 环境交互返回信息方式，"distances"返回5方向的距离，"frames"返回当前画面的颜色矩阵(720,1080,3). Defaults to "distances".
+            return_mode (str, optional): 环境交互返回信息方式，"distances"返回5方向的距离，"frames"返回当前画面的颜色矩阵(720,1080,3),"direction and distances"返回当前速度以及速度在正确方向上的分量，同时返回5方向距离. Defaults to "distances".
             visible (bool, optional): 是否将环境运行过程显示在屏幕上. Defaults to True.
             max_frame (int, optional): 环境运行的最大帧数，若达到该帧数agent尚未停止运行则立即停止. Defaults to 20000.
             seed (int, optional): 作为环境生成时的随机种子，若为None则随机. Defaults to None.
         
         Raises:
-            ValueError: 当return_mode不为"distances"或"frames"时，抛出该异常
+            ValueError: 当return_mode不为"distances"或"frames"或"direction and distances"时，抛出该异常
         """
         # copy parameters
         if return_mode == "distances":
             self.return_mode = "distances"
         elif return_mode == "frames":
             self.return_mode = "frames"
+        elif return_mode == "direction and distances":
+            self.return_mode = "direction and distances"
         else:
             raise ValueError("return_mode must be 'distances' or 'frames'")
         self.return_mode = return_mode
@@ -114,6 +117,10 @@ class Environment:
         #update the car
         for car in self.car_list:
             state_dist,cur_d_angle,cur_angle=car.update_by_step(self.screen,action)
+            speed_vec=car.get_speed_vec()
+            correct_vec=calculate_correct_vec(540,360,car.x,car.y)
+            projection=calculate_projection(speed_vec,correct_vec)
+            # print(speed_vec,correct_vec,projection)
             cur_reward=REWARD_ONE_LAP/(2*np.pi)*cur_d_angle
             # test whether the agent finish the game
             if cur_angle>2*np.pi:
@@ -189,7 +196,7 @@ def env_test():
     """本函数为调用环境的样例程序
     """
     env = Environment()
-    env.start("distances",True,200,120)
+    env.start("distances",True,12000,120)
     action = [ACCELERATION_FORWARD,0,0,0]
     score=0
     while(True):
@@ -197,10 +204,10 @@ def env_test():
         score+=reward
         action=simple_auto(speed,state)
         # print(state,reward,done,info)
-        print(env.get_position())
+        # print(env.get_position())
         if done:
             break
-        # sleep(1)
+        sleep(0.01)
     print("tot score:",score)
     print("tot step:",env.get_cur_step())
     env.close()

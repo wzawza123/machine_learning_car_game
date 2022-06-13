@@ -108,6 +108,7 @@ class Car:
         return self.detect_dist,d_angle,self.accumulate_angle
 
     def update_pos(self):
+        self.speed_vec=[self.speed*np.cos(self.angle),self.speed*np.sin(self.angle)]
         self.x+=self.speed*np.cos(self.angle)
         self.y+=self.speed*np.sin(self.angle)
         self.rect.center = (self.x,self.y)
@@ -124,6 +125,8 @@ class Car:
             pixel = screen.get_at((int(self.x), int(self.y)))
             if is_boundary_color(pixel):
                 self.is_alive = False
+                self.speed=0
+                self.speed_vec=[0,0]
         except:
             return
 
@@ -180,7 +183,7 @@ class Car:
             d_angle=(cur_angle-self.last_angle)
         self.last_angle=cur_angle
         self.accumulate_angle+=d_angle
-        print(self.accumulate_angle)
+        # print(self.accumulate_angle)
         return d_angle
 
     def update_score(self):
@@ -190,9 +193,12 @@ class Car:
         
         # print(self.last_angle,cur_angle,d_angle)
         d_angle=self.update_angle()
-        self.score+=d_angle
+        self.score+=d_angle*REWARD_ONE_LAP/(2*math.pi)
         # print(self.last_angle)
-        # print(self.score)
+        print(self.score)
 
     def get_score(self):
         return self.score
+
+    def get_speed_vec(self):
+        return self.speed_vec

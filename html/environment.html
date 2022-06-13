@@ -7,7 +7,7 @@
 <title>environment API documentation</title>
 <meta name="description" content="Description: this program implement a environment for the car game.
 Date: 2022-06-10 15:50:52
-LastEditTime: 2022-06-11 16:47:39" />
+LastEditTime: 2022-06-12 20:25:47" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -26,7 +26,7 @@ LastEditTime: 2022-06-11 16:47:39" />
 <section id="section-intro">
 <p>Description: this program implement a environment for the car game.
 Date: 2022-06-10 15:50:52
-LastEditTime: 2022-06-11 16:47:39</p>
+LastEditTime: 2022-06-12 20:25:47</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -34,13 +34,14 @@ LastEditTime: 2022-06-11 16:47:39</p>
 <pre><code class="python">&#39;&#39;&#39;
 Description: this program implement a environment for the car game.
 Date: 2022-06-10 15:50:52
-LastEditTime: 2022-06-11 16:47:39
+LastEditTime: 2022-06-12 20:25:47
 &#39;&#39;&#39;
 
 # import necessary libraries
 from asyncio import to_thread
 from time import sleep
 from tkinter.messagebox import NO
+from matplotlib import projections
 import pygame
 import sys
 import numpy as np
@@ -71,7 +72,7 @@ class Environment:
         &#34;&#34;&#34;本函数用以启动环境，在进行实例化后调用一次本函数即可，此后可通过reset函数来进行环境重置
 
         Args:
-            return_mode (str, optional): 环境交互返回信息方式，&#34;distances&#34;返回5方向的距离，&#34;frames&#34;返回当前画面的颜色矩阵(720,1080,3). Defaults to &#34;distances&#34;.
+            return_mode (str, optional): 环境交互返回信息方式，&#34;distances&#34;返回5方向的距离，&#34;frames&#34;返回当前画面的颜色矩阵(720,1080,3),&#34;direction and distances&#34;返回当前速度以及速度在正确方向上的分量，同时返回5方向距离. Defaults to &#34;distances&#34;.
             visible (bool, optional): 是否将环境运行过程显示在屏幕上. Defaults to True.
             max_frame (int, optional): 环境运行的最大帧数，若达到该帧数agent尚未停止运行则立即停止. Defaults to 20000.
             seed (int, optional): 作为环境生成时的随机种子，若为None则随机. Defaults to None.
@@ -84,6 +85,8 @@ class Environment:
             self.return_mode = &#34;distances&#34;
         elif return_mode == &#34;frames&#34;:
             self.return_mode = &#34;frames&#34;
+        elif return_mode == &#34;direction and distances&#34;:
+            self.return_mode = &#34;direction and distances&#34;
         else:
             raise ValueError(&#34;return_mode must be &#39;distances&#39; or &#39;frames&#39;&#34;)
         self.return_mode = return_mode
@@ -147,6 +150,10 @@ class Environment:
         #update the car
         for car in self.car_list:
             state_dist,cur_d_angle,cur_angle=car.update_by_step(self.screen,action)
+            speed_vec=car.get_speed_vec()
+            correct_vec=calculate_correct_vec(540,360,car.x,car.y)
+            projection=calculate_projection(speed_vec,correct_vec)
+            print(speed_vec,correct_vec,projection)
             cur_reward=REWARD_ONE_LAP/(2*np.pi)*cur_d_angle
             # test whether the agent finish the game
             if cur_angle&gt;2*np.pi:
@@ -222,7 +229,7 @@ def env_test():
     &#34;&#34;&#34;本函数为调用环境的样例程序
     &#34;&#34;&#34;
     env = Environment()
-    env.start(&#34;distances&#34;,True,200,120)
+    env.start(&#34;distances&#34;,True,12000,120)
     action = [ACCELERATION_FORWARD,0,0,0]
     score=0
     while(True):
@@ -230,10 +237,10 @@ def env_test():
         score+=reward
         action=simple_auto(speed,state)
         # print(state,reward,done,info)
-        print(env.get_position())
+        # print(env.get_position())
         if done:
             break
-        # sleep(1)
+        sleep(0.01)
     print(&#34;tot score:&#34;,score)
     print(&#34;tot step:&#34;,env.get_cur_step())
     env.close()
@@ -262,7 +269,7 @@ if __name__ == &#34;__main__&#34;:
     &#34;&#34;&#34;本函数为调用环境的样例程序
     &#34;&#34;&#34;
     env = Environment()
-    env.start(&#34;distances&#34;,True,200,120)
+    env.start(&#34;distances&#34;,True,12000,120)
     action = [ACCELERATION_FORWARD,0,0,0]
     score=0
     while(True):
@@ -270,10 +277,10 @@ if __name__ == &#34;__main__&#34;:
         score+=reward
         action=simple_auto(speed,state)
         # print(state,reward,done,info)
-        print(env.get_position())
+        # print(env.get_position())
         if done:
             break
-        # sleep(1)
+        sleep(0.01)
     print(&#34;tot score:&#34;,score)
     print(&#34;tot step:&#34;,env.get_cur_step())
     env.close()</code></pre>
@@ -335,7 +342,7 @@ if __name__ == &#34;__main__&#34;:
         &#34;&#34;&#34;本函数用以启动环境，在进行实例化后调用一次本函数即可，此后可通过reset函数来进行环境重置
 
         Args:
-            return_mode (str, optional): 环境交互返回信息方式，&#34;distances&#34;返回5方向的距离，&#34;frames&#34;返回当前画面的颜色矩阵(720,1080,3). Defaults to &#34;distances&#34;.
+            return_mode (str, optional): 环境交互返回信息方式，&#34;distances&#34;返回5方向的距离，&#34;frames&#34;返回当前画面的颜色矩阵(720,1080,3),&#34;direction and distances&#34;返回当前速度以及速度在正确方向上的分量，同时返回5方向距离. Defaults to &#34;distances&#34;.
             visible (bool, optional): 是否将环境运行过程显示在屏幕上. Defaults to True.
             max_frame (int, optional): 环境运行的最大帧数，若达到该帧数agent尚未停止运行则立即停止. Defaults to 20000.
             seed (int, optional): 作为环境生成时的随机种子，若为None则随机. Defaults to None.
@@ -348,6 +355,8 @@ if __name__ == &#34;__main__&#34;:
             self.return_mode = &#34;distances&#34;
         elif return_mode == &#34;frames&#34;:
             self.return_mode = &#34;frames&#34;
+        elif return_mode == &#34;direction and distances&#34;:
+            self.return_mode = &#34;direction and distances&#34;
         else:
             raise ValueError(&#34;return_mode must be &#39;distances&#39; or &#39;frames&#39;&#34;)
         self.return_mode = return_mode
@@ -411,6 +420,10 @@ if __name__ == &#34;__main__&#34;:
         #update the car
         for car in self.car_list:
             state_dist,cur_d_angle,cur_angle=car.update_by_step(self.screen,action)
+            speed_vec=car.get_speed_vec()
+            correct_vec=calculate_correct_vec(540,360,car.x,car.y)
+            projection=calculate_projection(speed_vec,correct_vec)
+            print(speed_vec,correct_vec,projection)
             cur_reward=REWARD_ONE_LAP/(2*np.pi)*cur_d_angle
             # test whether the agent finish the game
             if cur_angle&gt;2*np.pi:
@@ -575,7 +588,7 @@ if __name__ == &#34;__main__&#34;:
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>return_mode</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>环境交互返回信息方式，"distances"返回5方向的距离，"frames"返回当前画面的颜色矩阵(720,1080,3). Defaults to "distances".</dd>
+<dd>环境交互返回信息方式，"distances"返回5方向的距离，"frames"返回当前画面的颜色矩阵(720,1080,3),"direction and distances"返回当前速度以及速度在正确方向上的分量，同时返回5方向距离. Defaults to "distances".</dd>
 <dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>是否将环境运行过程显示在屏幕上. Defaults to True.</dd>
 <dt><strong><code>max_frame</code></strong> :&ensp;<code>int</code>, optional</dt>
@@ -596,7 +609,7 @@ if __name__ == &#34;__main__&#34;:
     &#34;&#34;&#34;本函数用以启动环境，在进行实例化后调用一次本函数即可，此后可通过reset函数来进行环境重置
 
     Args:
-        return_mode (str, optional): 环境交互返回信息方式，&#34;distances&#34;返回5方向的距离，&#34;frames&#34;返回当前画面的颜色矩阵(720,1080,3). Defaults to &#34;distances&#34;.
+        return_mode (str, optional): 环境交互返回信息方式，&#34;distances&#34;返回5方向的距离，&#34;frames&#34;返回当前画面的颜色矩阵(720,1080,3),&#34;direction and distances&#34;返回当前速度以及速度在正确方向上的分量，同时返回5方向距离. Defaults to &#34;distances&#34;.
         visible (bool, optional): 是否将环境运行过程显示在屏幕上. Defaults to True.
         max_frame (int, optional): 环境运行的最大帧数，若达到该帧数agent尚未停止运行则立即停止. Defaults to 20000.
         seed (int, optional): 作为环境生成时的随机种子，若为None则随机. Defaults to None.
@@ -609,6 +622,8 @@ if __name__ == &#34;__main__&#34;:
         self.return_mode = &#34;distances&#34;
     elif return_mode == &#34;frames&#34;:
         self.return_mode = &#34;frames&#34;
+    elif return_mode == &#34;direction and distances&#34;:
+        self.return_mode = &#34;direction and distances&#34;
     else:
         raise ValueError(&#34;return_mode must be &#39;distances&#39; or &#39;frames&#39;&#34;)
     self.return_mode = return_mode
@@ -686,6 +701,10 @@ list[list[list[int]]]</code></dt>
     #update the car
     for car in self.car_list:
         state_dist,cur_d_angle,cur_angle=car.update_by_step(self.screen,action)
+        speed_vec=car.get_speed_vec()
+        correct_vec=calculate_correct_vec(540,360,car.x,car.y)
+        projection=calculate_projection(speed_vec,correct_vec)
+        print(speed_vec,correct_vec,projection)
         cur_reward=REWARD_ONE_LAP/(2*np.pi)*cur_d_angle
         # test whether the agent finish the game
         if cur_angle&gt;2*np.pi:

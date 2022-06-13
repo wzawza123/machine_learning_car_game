@@ -1,7 +1,7 @@
 '''
 Description: 
 Date: 2022-06-08 21:21:14
-LastEditTime: 2022-06-11 15:22:35
+LastEditTime: 2022-06-12 20:03:27
 '''
 """
 Description: this program use the pygame to implement a car game
@@ -29,7 +29,7 @@ class CarGame:
         self.background_img, self.start_point = load_map('./maps/', 'map')
         self.car_list = []
         self.car_list.append(Car(self.car_image, self.start_point, np.pi / 2, False))
-        # self.car_list[0].bind_auto_func(simple_auto)
+        self.car_list[0].bind_auto_func(simple_auto)
         # self.car_list.append(Car(self.car_image, self.start_point,np.pi/3,True))
         # self.car_list[1].bind_auto_func(simple_auto)
         # self.car_list.append(Car(self.car_image, self.start_point,np.pi*3/4,True))
@@ -72,6 +72,8 @@ class CarGame:
                 self.screen)  # for the function is using the pixel value to detect the track boundary, so it should be done before the car.draw()
             car.calculate_distance(self.screen)  # for the same reson, it should be done before the car.draw()
             car.draw(self.screen)
+            print(car.get_speed_vec())
+        
         # draw a circle
         # pygame.draw.circle(self.screen, (255, 0, 0), (int(510), int(360)), 10)
         pygame.display.flip()

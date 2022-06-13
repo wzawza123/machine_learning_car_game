@@ -1,7 +1,7 @@
 '''
 Description: this file defines some common data and functions
 Date: 2022-06-09 16:45:38
-LastEditTime: 2022-06-11 16:25:59
+LastEditTime: 2022-06-12 20:25:23
 '''
 
 from locale import atoi
@@ -9,7 +9,7 @@ import string
 from typing import List, Tuple
 import pygame
 import math
-
+import numpy as np
 
 # the window default size
 WINDOW_WIDTH = 1080
@@ -141,3 +141,28 @@ def simple_auto(speed:float,detect_dist:List)->Tuple[float,float,float,float]:
         decision[3]=ANGLE_STEP
         decision[2]=0
     return decision
+
+def calculate_correct_vec(midx,midy,carx,cary):
+    """
+    calculate the correct vector of the car, which is vertical to the vector of the car and the centeral point, and point to clockwise
+    """
+    vec_x=carx-midx
+    vec_y=cary-midy
+    if vec_x==0:
+        if vec_y>0:
+            return [1,0]
+        else:
+            return [-1,0]
+    else:
+        m=-vec_y/vec_x
+        n=1
+        if vec_x<0:
+            m=-m
+            n=-n
+        return [m,n]
+
+def calculate_projection(vec1,vec2):
+    """
+    calculate the projection of the two vectors, vec1 to vec2
+    """
+    return (vec1[0]*vec2[0]+vec1[1]*vec2[1])/np.sqrt(vec2[0]**2+vec2[1]**2)
