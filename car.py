@@ -195,7 +195,7 @@ class Car:
         d_angle=self.update_angle()
         self.score+=d_angle*REWARD_ONE_LAP/(2*math.pi)
         # print(self.last_angle)
-        print(self.score)
+        # print(self.score)
 
     def get_score(self):
         return self.score

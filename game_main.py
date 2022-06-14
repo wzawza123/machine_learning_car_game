@@ -1,7 +1,7 @@
 '''
 Description: 
 Date: 2022-06-08 21:21:14
-LastEditTime: 2022-06-12 20:03:27
+LastEditTime: 2022-06-14 10:43:06
 '''
 """
 Description: this program use the pygame to implement a car game
@@ -28,8 +28,8 @@ class CarGame:
         # load the map
         self.background_img, self.start_point = load_map('./maps/', 'map')
         self.car_list = []
-        self.car_list.append(Car(self.car_image, self.start_point, np.pi / 2, False))
-        self.car_list[0].bind_auto_func(simple_auto)
+        self.car_list.append(Car(self.car_image, self.start_point, np.pi / 2, True))
+        self.car_list[0].bind_auto_func(go_out_test_auto)
         # self.car_list.append(Car(self.car_image, self.start_point,np.pi/3,True))
         # self.car_list[1].bind_auto_func(simple_auto)
         # self.car_list.append(Car(self.car_image, self.start_point,np.pi*3/4,True))

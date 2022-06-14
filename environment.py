@@ -1,7 +1,7 @@
 '''
 Description: this program implement a environment for the car game.
 Date: 2022-06-10 15:50:52
-LastEditTime: 2022-06-13 17:14:16
+LastEditTime: 2022-06-14 10:56:24
 '''
 
 # import necessary libraries
@@ -101,6 +101,10 @@ class Environment:
                 list[float]: state: 车辆5个方向离墙体的的距离
             for "frames" return_mode:
                 list[list[list[int]]]: color array: with the shape of (1080,720,3): 帧颜色矩阵, 范围[0,255]
+            for "direction and distances" return_mode:
+                float: speed: 车辆的运行速度
+                float: projection: 车辆的运行速度在正确方向上的投影
+                list[float]: state: 车辆5个方向离墙体的的距离
             float: reward: 当前行动的奖励
             bool: done: 是否停止运行
             str: info: 当前状态的信息
@@ -114,6 +118,7 @@ class Environment:
         #update the ctr values
         self.cur_step+=1
         info=""
+        projection=0
         #update the car
         for car in self.car_list:
             state_dist,cur_d_angle,cur_angle=car.update_by_step(self.screen,action)
@@ -121,7 +126,7 @@ class Environment:
             correct_vec=calculate_correct_vec(540,360,car.x,car.y)
             projection=calculate_projection(speed_vec,correct_vec)
             # print(speed_vec,correct_vec,projection)
-            cur_reward=REWARD_ONE_LAP/(2*np.pi)*cur_d_angle
+            cur_reward=REWARD_ONE_LAP/(2*np.pi)*cur_d_angle-1
             # test whether the agent finish the game
             if cur_angle>2*np.pi:
                 self.running=False
@@ -152,9 +157,10 @@ class Environment:
         pygame.display.flip()
         if self.return_mode == "distances":
             return self.car_list[0].speed,state_dist,cur_reward,not(self.running),info
-        else:
+        elif self.return_mode == "frames":
             return self.get_cur_frame(),cur_reward,not(self.running),info
-    
+        else:
+            return self.car_list[0].speed,projection,cur_reward,not(self.running),info
     def get_cur_frame(self):
         """该函数用以获取当前帧的颜色矩阵
         """

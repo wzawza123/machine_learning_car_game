@@ -7,7 +7,7 @@
 <title>environment API documentation</title>
 <meta name="description" content="Description: this program implement a environment for the car game.
 Date: 2022-06-10 15:50:52
-LastEditTime: 2022-06-12 20:25:47" />
+LastEditTime: 2022-06-13 17:14:16" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -26,7 +26,7 @@ LastEditTime: 2022-06-12 20:25:47" />
 <section id="section-intro">
 <p>Description: this program implement a environment for the car game.
 Date: 2022-06-10 15:50:52
-LastEditTime: 2022-06-12 20:25:47</p>
+LastEditTime: 2022-06-13 17:14:16</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -34,7 +34,7 @@ LastEditTime: 2022-06-12 20:25:47</p>
 <pre><code class="python">&#39;&#39;&#39;
 Description: this program implement a environment for the car game.
 Date: 2022-06-10 15:50:52
-LastEditTime: 2022-06-12 20:25:47
+LastEditTime: 2022-06-13 17:14:16
 &#39;&#39;&#39;
 
 # import necessary libraries
@@ -78,7 +78,7 @@ class Environment:
             seed (int, optional): 作为环境生成时的随机种子，若为None则随机. Defaults to None.
         
         Raises:
-            ValueError: 当return_mode不为&#34;distances&#34;或&#34;frames&#34;时，抛出该异常
+            ValueError: 当return_mode不为&#34;distances&#34;或&#34;frames&#34;或&#34;direction and distances&#34;时，抛出该异常
         &#34;&#34;&#34;
         # copy parameters
         if return_mode == &#34;distances&#34;:
@@ -153,7 +153,7 @@ class Environment:
             speed_vec=car.get_speed_vec()
             correct_vec=calculate_correct_vec(540,360,car.x,car.y)
             projection=calculate_projection(speed_vec,correct_vec)
-            print(speed_vec,correct_vec,projection)
+            # print(speed_vec,correct_vec,projection)
             cur_reward=REWARD_ONE_LAP/(2*np.pi)*cur_d_angle
             # test whether the agent finish the game
             if cur_angle&gt;2*np.pi:
@@ -348,7 +348,7 @@ if __name__ == &#34;__main__&#34;:
             seed (int, optional): 作为环境生成时的随机种子，若为None则随机. Defaults to None.
         
         Raises:
-            ValueError: 当return_mode不为&#34;distances&#34;或&#34;frames&#34;时，抛出该异常
+            ValueError: 当return_mode不为&#34;distances&#34;或&#34;frames&#34;或&#34;direction and distances&#34;时，抛出该异常
         &#34;&#34;&#34;
         # copy parameters
         if return_mode == &#34;distances&#34;:
@@ -423,7 +423,7 @@ if __name__ == &#34;__main__&#34;:
             speed_vec=car.get_speed_vec()
             correct_vec=calculate_correct_vec(540,360,car.x,car.y)
             projection=calculate_projection(speed_vec,correct_vec)
-            print(speed_vec,correct_vec,projection)
+            # print(speed_vec,correct_vec,projection)
             cur_reward=REWARD_ONE_LAP/(2*np.pi)*cur_d_angle
             # test whether the agent finish the game
             if cur_angle&gt;2*np.pi:
@@ -599,7 +599,7 @@ if __name__ == &#34;__main__&#34;:
 <h2 id="raises">Raises</h2>
 <dl>
 <dt><code>ValueError</code></dt>
-<dd>当return_mode不为"distances"或"frames"时，抛出该异常</dd>
+<dd>当return_mode不为"distances"或"frames"或"direction and distances"时，抛出该异常</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -615,7 +615,7 @@ if __name__ == &#34;__main__&#34;:
         seed (int, optional): 作为环境生成时的随机种子，若为None则随机. Defaults to None.
     
     Raises:
-        ValueError: 当return_mode不为&#34;distances&#34;或&#34;frames&#34;时，抛出该异常
+        ValueError: 当return_mode不为&#34;distances&#34;或&#34;frames&#34;或&#34;direction and distances&#34;时，抛出该异常
     &#34;&#34;&#34;
     # copy parameters
     if return_mode == &#34;distances&#34;:
@@ -704,7 +704,7 @@ list[list[list[int]]]</code></dt>
         speed_vec=car.get_speed_vec()
         correct_vec=calculate_correct_vec(540,360,car.x,car.y)
         projection=calculate_projection(speed_vec,correct_vec)
-        print(speed_vec,correct_vec,projection)
+        # print(speed_vec,correct_vec,projection)
         cur_reward=REWARD_ONE_LAP/(2*np.pi)*cur_d_angle
         # test whether the agent finish the game
         if cur_angle&gt;2*np.pi:

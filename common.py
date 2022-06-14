@@ -1,7 +1,7 @@
 '''
 Description: this file defines some common data and functions
 Date: 2022-06-09 16:45:38
-LastEditTime: 2022-06-12 20:25:23
+LastEditTime: 2022-06-14 10:57:00
 '''
 
 from locale import atoi
@@ -33,7 +33,7 @@ STARTING_POINT = (200,600)
 
 #about the reward
 REWARD_ONE_LAP=1000 # reward if the car can finish one lap
-DEAD_SCORE=-500 # the dead score of the car
+DEAD_SCORE=0 # the dead score of the car
 
 
 
@@ -141,6 +141,9 @@ def simple_auto(speed:float,detect_dist:List)->Tuple[float,float,float,float]:
         decision[3]=ANGLE_STEP
         decision[2]=0
     return decision
+
+def go_out_test_auto(speed:float,detect_dist:List)->Tuple[float,float,float,float]:
+    return [1,0,0,0]
 
 def calculate_correct_vec(midx,midy,carx,cary):
     """
